@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koszyk - Velto</title>
+</head>
+<body>
+    <h1>Koszyk</h1>
+    <div id="cart-items"></div>
+    <p>Łączna kwota: <span id="total-price">0 PLN</span></p>
+    <button id="checkout-button">Przejdź do płatności</button>
+
+    <script>
+      // Funkcja do wyświetlania produktów w koszyku
+function displayCart() {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cartItemsDiv = document.getElementById('cart-items');
+    let totalPrice = 0;
+    cartItemsDiv.innerHTML = '';
+
+    cart.forEach((item, index) => {
+        // Sprawdzanie, czy cena i ilość są liczbami
+        let price = parseFloat(item.price);
+        let quantity = parseInt(item.quantity, 10);
+
+        // Jeśli cena lub ilość są niepoprawne, ustawiamy na 0
+        if (isNaN(price)) price = 0;
+        if (isNaN(quantity)) quantity = 1;
+
+        let productDiv = document.createElement('div');
+        productDiv.classList.add('cart-item');
+        productDiv.innerHTML = `
+            <span>${item.productName} - ${price.toFixed(2)} PLN</span>
+            <input type="number" value="${quantity}" min="1" data-index="${index}" class="quantity-input" />
+            <button onclick="removeItem(${index})">Usuń</button>
+        `;
+        cartItemsDiv.appendChild(productDiv);
+
+        // Dodajemy poprawnie obliczoną cenę
+        totalPrice += price * quantity;
+    });
+
+    // Wyświetlamy łączną kwotę z dwoma miejscami po przecinku
+    document.getElementById('total-price').textContent = totalPrice.toFixed(2) + ' PLN';
+}
+
+        
+
+        // Funkcja do usuwania produktu z koszyka
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);  // Usuwa produkt o podanym indeksie
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();  // Odświeża widok koszyka
+        }
+
+        // Funkcja do edytowania ilości produktu
+        function updateQuantity(index, newQuantity) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart[index].quantity = newQuantity;  // Aktualizuje ilość
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCart();  // Odświeża widok koszyka
+        }
+
+        // Funkcja do nasłuchiwania zmian ilości
+        document.addEventListener('input', function(event) {
+            if (event.target.classList.contains('quantity-input')) {
+                let index = event.target.getAttribute('data-index');
+                let newQuantity = parseInt(event.target.value);
+                if (newQuantity > 0) {
+                    updateQuantity(index, newQuantity);
+                } else {
+                    event.target.value = 1;  // Ustawia minimalną ilość na 1
+                }
+            }
+        });
+
+        // Inicjalizacja koszyka po załadowaniu strony
+        window.onload = function() {
+            displayCart();
+        };
+
+        // Obsługa płatności
+        const stripe = Stripe('YOUR_PUBLIC_KEY');
+
+        document.getElementById('checkout-button').addEventListener('click', () => {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let lineItems = cart.map(item => ({
+                price_data: {
+                    currency: 'pln',
+                    product_data: {
+                        name: item.productName
+                    },
+                    unit_amount: item.price * 100 // Cena w groszach
+                },
+                quantity: item.quantity
+            }));
+
+            stripe.redirectToCheckout({
+                lineItems: lineItems,
+                mode: 'payment',
+                successUrl: 'https://your-success-url.com',
+                cancelUrl: 'https://your-cancel-url.com',
+            }).then((result) => {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

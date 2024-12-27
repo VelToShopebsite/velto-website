@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velto - Ekskluzywne Portfele Minimalistyczne</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Stylizacja strony */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;  
+            color: #333;
+        }
+        header {
+            background-color: #000;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 150px;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #111;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(to bottom, #fff, #ddd);
+        }
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .hero button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .hero button:hover {
+            background-color: #333;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .product {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fafafa;
+        }
+        .product img {
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+        .product h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .product p {
+            font-size: 16px;
+            color: #555;
+        }
+        .product button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .product button:hover {
+            background-color: #333;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #111;
+            color: #fff;
+        }
+        .contact {
+            padding: 20px;
+            text-align: center;
+            background-color: #fff;
+        }
+        .contact h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .contact p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="Velto.png.png" alt="Logo Velto">
+</header>
+
+<nav>
+    <a href="#home">Strona Główna</a>
+    <a href="#products">Produkty</a>
+    <a href="#contact">Kontakt</a>
+    <a href="cart.html">Koszyk</a>
+</nav>
+
+<section class="hero" id="home">
+    <h1>Velto - Ekskluzywne Portfele Minimalistyczne</h1>
+    <p>Odkryj idealne połączenie stylu, funkcjonalności i luksusu. Nasze portfele minimalistyczne to esencja nowoczesnej elegancji.</p>
+    <button>Przeglądaj Kolekcję</button>
+</section>
+
+<section class="products" id="products">
+    <div class="product">
+        <img src="imageswallet1.jpg.png" alt="Portfel minimalistyczny 1" class="opcja1.png" data-product="product1">
+        <h3>Portfel Minimalistyczny Slim</h3>
+        <p>Bestseeler. Cena: 179,99 PLN</p>
+        <button onclick="addToCart('Portfel Minimalistyczny Slim', 179.99)">Dodaj do koszyka</button>
+    </div>
+    <div class="product">
+        <img src="imageswallet2.jpg.png" alt="Portfel minimalistyczny 2" class="opcja2.png" data-product="product2">
+        <h3>Portfel Minimalistyczny Luxe</h3>
+        <p>Ekskluzywność w każdym detalu. Cena: 149,99 PLN</p>
+        <button onclick="addToCart('Portfel Minimalistyczny Luxe', 149.99)">Dodaj do koszyka</button>
+    </div>
+    <div class="product">
+        <img src="imageswallet3.jpg.png" alt="Portfel minimalistyczny 3" class="opcja3.png" data-product="product3">
+        <h3>Portfel Minimalistyczny Classic</h3>
+        <p>Klasyka i funkcjonalność. Cena: 159,99 PLN</p>
+        <button onclick="addToCart('Portfel Minimalistyczny Classic', 159.99)">Dodaj do koszyka</button>
+    </div>
+</section>
+
+<!-- Modal for displaying product gallery -->
+<div id="gallery-modal" class="gallery-modal">
+    <div class="gallery-content">
+        <span id="close-gallery" class="close-gallery">&times;</span>
+        <div id="gallery-images"></div>
+    </div>
+</div>
+
+
+
+
+<section class="contact" id="contact">
+    <h2>Kontakt</h2>
+    <p>Masz pytania? Skontaktuj się z nami: <a href="mailto:velto.shop.kontakt@gmail.com">velto.shop.kontakt@gmail.com</a></p>
+</section>
+
+<footer>
+    <p>&copy; 2024 Velto. Wszystkie prawa zastrzeżone.</p>
+</footer>
+
+</body>
+</html>
+<script>
+    function addToCart(productName, price) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.push({ productName, price });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(`${productName} został dodany do koszyka.`);
+    }
+</script>
